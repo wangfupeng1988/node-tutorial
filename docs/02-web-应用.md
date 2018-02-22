@@ -348,11 +348,13 @@ express 总结的中间件有以下几种：
 
 -----
 
-## 页面渲染（Bigpipe）
+## 页面渲染
 
 nodejs 没有御用的模板引擎，这一点不像 php asp jsp 等，需要自己去选择，例如 artTemplate 。书中也简单讲解了实现一个模板引擎的逻辑，我之前了解过 vue 中模板的解析，因此对这块逻辑也不算陌生。另外，模板解析的逻辑，大概了解即可，也无需详细深入，毕竟是工具性的东西。这里先略过。
 
-接下来书中介绍了 Bigpipe ，需详细记录一下。普通的页面渲染，即便是首屏渲染，也是拿到所有该拿的数据之后，一次性吐出给前端。**而 Bigpipe 是将页面内容分成了多个部分（pagelet），然后分批逐步输出**。
+**【扩展】Bigpipe**
+
+普通的页面渲染，即便是首屏渲染，也是拿到所有该拿的数据之后，一次性吐出给前端。**而 Bigpipe 是将页面内容分成了多个部分（pagelet），然后分批逐步输出**。
 
 首先，要向前端输出模板和接收 pagelet 的方法，其实就是一个 JS 方法，该方法接收 DOM 选择器和内容，然后将内容渲染到 DOM 节点中。接下来，server 端异步请求数据，然后分批输出到前端去渲染，如下代码。nodejs 异步请求是部分顺序的，因此下面两个异步，哪个先输出不知道——也无需知道，先查询出来的先输出即可。
 
@@ -363,14 +365,14 @@ app.get('/profile', function (req, res) {
         res.write('<script>bigpipe.set("articles", "' + JSON.stringify(data) + '")</script>')
         num++
         if (num === 2) {
-            res.end()
+            res.end()  // 结束请求
         }
     })
     db.getData('sql2', function (err, data) {
         res.write('<script>bigpipe.set("copyright", "' + JSON.stringify(data) + '")</script>')
         num++
         if (num === 2) {
-            res.end()
+            res.end()  // 结束请求
         }
     })
 })
