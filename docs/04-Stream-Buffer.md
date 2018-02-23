@@ -65,7 +65,7 @@ req.on('end', function () {
 
 我们用桶和水来做比喻还算比较恰当（其实计算机中的概念，都是数学概念，都是抽象的，都无法完全用现实事务做比喻），如下图。数据从原来的 source 流向 dest ，要向水一样，慢慢的一点一点的通过一个管道流过去。
 
-![](http://www.runoob.com/wp-content/uploads/2015/09/bVcla61)
+![](https://images2018.cnblogs.com/blog/138012/201802/138012-20180222173741652-978565681.png)
 
 上图是一个完整的流程，对于流的操作，不一定非得必须完整。如上文的代码，我们仅仅实现了 source 的出口部分，管道和 dest 都没有实现。即，我们通过`data`和`end`事件能监听数据的流出或者来源，然后拿到流出的数据我们做了其他处理。
 
@@ -293,24 +293,45 @@ Buffer 对象就是二进制在 JS 中的表述形式，即 Buffer 对象就是�
 
 ### Buffer 和字符串的关系
 
-首先你要知道什么是编码。
+Buffer 是二级制，和字符串完全是两码事儿，但是他们可以相互转换 —— 前提是规定好用哪个编码规范。
 
+```js
+var str = '深入浅出nodejs'
+var buf = new Buffer(str, 'utf-8')
+console.log(buf)  // <Buffer e6 b7 b1 e5 85 a5 e6 b5 85 e5 87 ba 6e 6f 64 65 6a 73>
+console.log(buf.toString('utf-8'))  // 深入浅出nodejs
+```
 
-
+以上代码使用`utf-8`编码对二进制和字符串进行了转换，不过其实 JS 默认就是`utf-8`编码。
 
 ### 为何流动的数据是 Buffer 类型？
 
+计算机真正能识别的就是二进制数据。我们在程序中使用字符串、数字、数组等都是有特定的语言和环境的，是一个封闭的开发环境。代码真正执行的时候还需要这个环境做很多其他底层的工作，并不是说计算机底层就认识字符串、数字和数组。
 
+但是“流”动的数据却可能会跑出这个环境，它会涉及到网络 IO 和文件 IO 等其他环境。即，程序从 http 请求读取数据、或者发送数据给 http 请求，得用一个两者都认识的格式才行，那就只能是二进制了。
+
+另外，反过来思考，不用二进制用什么呢？用字符串？那流动的数据还可能是视频和图片呢，字符串表述不了。
 
 ### Buffer 的好处
 
-Buffer 能提高 http 请求的性能
+Buffer 能提高 http 请求的性能，《深入浅出 nodejs》书中提到，使用`stream.pipe(res)`在特定情况下，QPS 能从 2k+ 提升到 4k+
+
+```js
+// 不使用 Stream
+res.write('hello nodejs')
+res.end()
+
+// 使用 Stream
+var readStream = fs.createReadStream('./file1.txt')
+readStream.pipe(res)
+```
 
 ----
 
 ## 总结
 
+其实洋洋洒洒这么多，主要就是解决开头提到的“一点一点”的从 req 中接收传递来的数据，从而引申出 Stream 这个概念，并且介绍了 Stream 中比较重要的内容。以后只要遇到`data` `end`事件，或者遇到大数据内容处理，或者遇到 IO 的性能问题等，都可以考虑到 Stream 。Stream 是 server 端比较重要的概念，其基础知识必须全面了解。
 
-ReadLine
+**【扩展】**
 
-
+其实用 Stream 读取文件内容，无法确保是一行一行读取的，但是 nodejs 有 [readline](http://nodejs.cn/api/readline.html) 可以让你轻松实现一行一行读取文件。
