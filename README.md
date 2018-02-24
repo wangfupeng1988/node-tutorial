@@ -38,9 +38,10 @@ nodejs 是一种将 JS 作为语言的 server 端开发技术 —— 说起来�
     - 异步 IO
     - 异步编程的问题
 - [玩转进程](./docs/06-进程.md)
-    - 为何要启用多进程（利用 CPU 、避免 v8 内存限制）
+    - 线程 vs 进程
+    - 为何要启用多进程
     - child_process
-    - cluster 和 pm2
+    - cluster
 - [其他](./docs/07-其他.md)
     - 关于数据存储（如 mysql redis 等）
 
